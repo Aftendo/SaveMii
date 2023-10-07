@@ -9,7 +9,8 @@ import os
 import shutil
 from savemii.settings import BASE_DIR
 from django.utils.timezone import now
-
+from base64 import b64decode
+from binascii import hexlify
 import xmltodict
 
 print("Hi there! Checking if /archives/ exists....")
@@ -66,6 +67,7 @@ def nnidArchiver(nnid: str, user, refresh):
     if "message" in api:
         return api['message']
     #else, continue with the archiving process
+    api['data'] = hexlify(b64decode(api['data'])).decode()
     #WARNING: POORLY WRITTEN CODE AHEAD!!
     # save mii images
     miis = api['images']['image']

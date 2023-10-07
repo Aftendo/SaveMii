@@ -15,12 +15,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}
+    <h1>Search an archived NNID</h1>
     <p>Put an archived NNID on the search bar and hit the search button to show its data.</p>
     <form method="post" action="/search">
         {% csrf_token %}
         <div class="position-relative start-50 translate-middle input-group mt-5 w-75">
             <input name="search" required type="text" autofocus autocorrect="off" autocomplete="off" autocapitalize="none" spellcheck="none" pattern="^[\w+\d+-\-._]{1,16}$" title="4 to 16 characters: letters, numbers, periods, hyphens, underscores" class="form-control" placeholder="Nintendo Network ID" aria-label="Nintendo Network ID" aria-describedby="button-addon">
             <button class="btn btn-outline-primary" type="submit" id="button-addon"><span class="bi bi-search"><span class="visually-hidden">Submit</span></span></button>
+        </div>
+    </form>
+<h1>Archive an NNID</h1>
+    {% if message %}
+    <p style="color: red;">{{message}}</p>
+    {% endif %}
+    {% if success %}
+    <p style="color: green;">Thank you!! {{nnid}} has been archived!!</p>
+    {% endif %}
+    <p>Put an NNID on the archive bar and hit the archive button to archive its data. (and preserve nintendo history)</p>
+    <form method="post" action="/archive">
+        {% csrf_token %}
+        <div class="position-relative start-50 translate-middle input-group mt-5 w-75">
+            <input name="nnid" required type="text" autofocus autocorrect="off" autocomplete="off" autocapitalize="none" spellcheck="none" pattern="^[\w+\d+-\-._]{4,16}$" title="4 to 16 characters: letters, numbers, periods, hyphens, underscores" class="form-control" placeholder="Nintendo Network ID" aria-label="Nintendo Network ID" aria-describedby="button-addon">
+            <button class="btn btn-outline-success" type="submit" id="button-addon"><span class="bi bi-archive-fill"><span class="visually-hidden">Archive</span></span></button>
         </div>
     </form>
 </div>
