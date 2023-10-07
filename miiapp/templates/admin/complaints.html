@@ -5,7 +5,7 @@
     {% if complaints %}
     {% for complaint in complaints %}
     <h3>complaint by {{complaint.author}} for {{complaint.target.nnid}}</h3>
-    <p>{{complaint.content}}</p>
+    <p>{{complaint.content|linebreaks}}</p>
     <form method="post">{% csrf_token %}<input type="hidden" name="complaint" value="{{complaint.id}}"/><input type="submit" value="delete" /></form>
     {% endfor %}
     {% else %}
