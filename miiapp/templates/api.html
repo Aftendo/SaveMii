@@ -1,0 +1,31 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="mt-5 mb-5 mx-auto col-10 col-md-8 col-lg-6">
+    <h1>API</h1>
+    <p>If you are an owner of a Miiverse Clone, or just interested on getting NNID info, we have a <b>publicly available API</b> for that purpose.</p>
+    <h3>Usage</h3>
+    <b id="mii-hash">Get the Mii hash</b><br>
+    <code>/api/gethash?nnid={nnid}</code>
+    <p>Get the hash as a raw HTTP response. Can be used to get <a href="#mii-image">Mii faces images</a>.</p>
+    <b id="nnid-data">Get the NNID data</b><br>
+    <code>/api/nnidinfo?nnid={nnid}</code>
+    <p>Returns a JSON containing all the data of an archived NNID.</p>
+    <i>Note: if the NNID was archived by an anonymous person, the owner key will be defined to null. Otherwise, its set to the username of the archiver.</i><br><br>
+    <b id="mii-image">Get a Mii image</b><br>
+    <code>/mii/{mii_hash}/{type}</code>
+    <p>Returns the image in the PNG format corresponding to the following faces types:</p>
+    <ul>
+        <li>standard (<i>note: TGA format image</i>)</li>
+        <li>normal_face</li>
+        <li>happy_face</li>
+        <li>like_face</li>
+        <li>surprised_face</li>
+        <li>puzzled_face</li>
+        <li>frustrated_face</li>
+        <li>whole_body (<i>note: this contains the entire Mii's body, not just the face. Face expression is normal_face.</i>)</li>
+    </ul>
+    <p>You also need the mii_hash parameter to get the image, as this uniquely identifies the NNID's Mii. You can get this using <a href="#mii-hash">this API</a>.</p>
+    <h3>Errors</h3>
+    <p>When an error happens in the API's processing, it returns a JSON with the error key set to true. The error message is contained in the message key.</p>
+</div>
+{% endblock %}

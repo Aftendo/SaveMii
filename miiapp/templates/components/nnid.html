@@ -1,0 +1,15 @@
+<div class="card mt-1"  {% if not request.is_mobile %}style="width: 35% !important; display: inline-block"{% endif %}>
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="/mii/{{nnid.mii_hash}}/whole_body" class="img-fluid rounded-start" alt="{{nnid}}'s Mii">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body mt-3">
+                <h5 class="card-title">{{nnid.nnid}}</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Refreshed on: {{nnid.refreshed_on}}</h6>
+                <p class="card-text">Nickname: {{nnid.nickname}}</p>
+                <a href="/nnid/{{nnid.nnid}}" type="button" class="btn btn-primary"><span class="bi bi-three-dots"></span> See more</a><br><br>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2">
+    <h1>Complain about {{nnid}}</h1>
+    {% if message %}
+    <p style="color: red;">{{message}}</p>
+    {% endif %}
+    {% if success %}
+    <p style="color: green;">Thank you. Your complaint has been sent. We will check it when we will have time.</p>
+    {% else %}
+    <p>If an NNID that you own was archived on your behalf and you want it deleted, you can use this functionnality.</p>
+    <b>You need to prove that you're the owner of the NNID, by sending some screenshots of the NNID settings (using imgur or any other image hosting). <br>The NNID must be clearly visible, with its Mii.</b>
+    <form method="post">
+        {% csrf_token %}
+        <div class="position-relative start-50 translate-middle input-group w-75" style="margin-top: 8rem !important;">
+            <textarea name="complaint" style="resize: none; height: 200px" class="form-control" aria-label="Complaint"></textarea>
+            <input class="btn btn-outline-success" aria-describedby="button-addon" type="submit" id="button-addon" value="Send" />
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

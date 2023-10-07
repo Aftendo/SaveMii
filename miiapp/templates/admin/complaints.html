@@ -1,0 +1,15 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2">
+    <h1>Complaints list</h1>
+    {% if complaints %}
+    {% for complaint in complaints %}
+    <h3>complaint by {{complaint.author}} for {{complaint.target.nnid}}</h3>
+    <p>{{complaint.content}}</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="complaint" value="{{complaint.id}}"/><input type="submit" value="delete" /></form>
+    {% endfor %}
+    {% else %}
+    <p>no complaints found; ready to go!</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2 mb-2">
+    <h1>NNIDs you've put as favorite</h1>
+    {% if results %}
+    {% for favorite in results %}
+    {% block nnid_result %}
+    {% include 'components/nnid_fav.html' %}
+    {% endblock %}
+    {% endfor %}
+    {% else %}
+    <p>You didn't put any NNID as favorite.</p>
+    {% endif %}
+</div>
+{% endblock %}

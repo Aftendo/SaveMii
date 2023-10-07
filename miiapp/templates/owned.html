@@ -1,0 +1,15 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2 mb-2">
+    <h1>NNIDs you've archived</h1>
+    {% if results %}
+    {% for nnid in results %}
+    {% block nnid_result %}
+    {% include 'components/nnid.html' %}
+    {% endblock %}
+    {% endfor %}
+    {% else %}
+    <p>No NNIDs were found...</p>
+    {% endif %}
+</div>
+{% endblock %}

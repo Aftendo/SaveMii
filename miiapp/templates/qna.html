@@ -1,0 +1,18 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="mt-5 mb-5 mx-auto col-10 col-md-8 col-lg-6">
+    <h1>Questions and Answers</h1>
+    <h4>Q: How do you archive NNIDs?</h4>
+    <p><b>A:</b> Basically, we fetch NNID information from NNIDLT, which can sometimes be slow, because NNIDLT's host (HelioHost) isn't fast AT ALL. Then, we download every Mii image in the images key and we save the NNID data in a row to the database.</p>
+    <h4>Q: Why is it named like the tool to extract savedata from the Wii U?</h4>
+    <p><b>A:</b> (Rixy) I didn't knew that this SaveMii existed lmao</p>
+    <h4>Q: Someone archived my NNID but I want it deleted. How do I do this?</h4>
+    <p><b>A:</b> First, register to the website. Then, go to your NNID's page and click the "Complaint" button and write your complaint, with a URL to a photo of your NNID settings with your Mii and NNID clearly visible. Then, wait for a few days, and if everything worked, your NNID should be deleted.</p>
+    <h4>Q: I sent a complaint, but so far my NNID hasn't been deleted; why?</h4>
+    <p><b>A:</b> There could be multiple reasons for this:</p>
+    <ul>
+        <li>Nobody looked at your complaint for now. We have lives, and we may not respond to your complaint. Just wait for a few days.</li>
+        <li>Your complaint wasn't convicing enough: missing photo, NNID and/or Mii not clearly visible.</li>
+    </ul>
+</div>
+{% endblock %}

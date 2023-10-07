@@ -1,0 +1,22 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<form method="post" class="mx-auto col-10 col-md-8 col-lg-6  w-75 mt-5 mb-5">
+    {% csrf_token %}
+    <h1>Sign In</h1>
+    <div class="mb-2">
+        {% if message %}
+        <p class="mb-2" style="color: red;">{{message}}</p>
+        {% endif %}
+        <a class="mb-2" href="/signup">Don't have an account?</a>
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Username</span>
+        <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon2">Password</span>
+        <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2">
+    </div>
+    <button type="submit" class="btn btn-success">Sign in</button>
+</form>
+{% endblock %}

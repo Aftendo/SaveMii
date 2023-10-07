@@ -1,0 +1,27 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<header class="bg-body-tertiary text-center py-5">
+    <div class="container-fluid">
+        <h1>SaveMii</h1>
+        <p class="lead">A simple service to preserve Nintendo history by backing up as much NNIDs as we can.</p>
+        <i>Currently hosting {{count}} NNIDs!</i>
+    </div>
+</header>
+<div class="text-center mt-2">
+    {% if request.is_mobile %}
+    <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center" role="alert">
+        <span class="bi bi-exclamation-triangle-fill"></span>
+        <div>SaveMii on mobile devices may not be the greatest experience. Please use a PC for a more comfortable experience.</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    <p>Put an archived NNID on the search bar and hit the search button to show its data.</p>
+    <form method="post" action="/search">
+        {% csrf_token %}
+        <div class="position-relative start-50 translate-middle input-group mt-5 w-75">
+            <input name="search" required type="text" autofocus autocorrect="off" autocomplete="off" autocapitalize="none" spellcheck="none" pattern="^[\w+\d+-\-._]{1,16}$" title="4 to 16 characters: letters, numbers, periods, hyphens, underscores" class="form-control" placeholder="Nintendo Network ID" aria-label="Nintendo Network ID" aria-describedby="button-addon">
+            <button class="btn btn-outline-primary" type="submit" id="button-addon"><span class="bi bi-search"><span class="visually-hidden">Submit</span></span></button>
+        </div>
+    </form>
+</div>
+{% endblock %}

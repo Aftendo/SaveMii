@@ -1,0 +1,13 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2 mb-2">
+    <h1>Refresh {{nnid}}</h1>
+    {% if message %}
+    <p style="color: red;">{{message}}</p>
+    {% endif %}
+    {% if success %}
+    <p style="color: green;">Thank you! {{nnid}} has been refreshed!</p>
+    <a href="/nnid/{{nnid}}" class="btn btn-outline-success" type="submit">Return to NNID</a>
+    {% endif %}
+</div>
+{% endblock %}

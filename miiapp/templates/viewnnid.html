@@ -1,0 +1,44 @@
+{% extends 'components/header.html' %}
+{% block main %}
+<div class="text-center mt-2">
+    <h1>{{ nnid }}</h1>
+    <div {% if not request.is_mobile %}class="d-inline-flex"{% endif %}>
+        <div class="card ms-4" {% if not request.is_mobile %}style="width: 35% !important"{% endif %}>
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="/mii/{{nnid.mii_hash}}/whole_body" class="img-fluid rounded-start" alt="{{nnid}}'s Mii">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body mt-3">
+                        <h5 class="card-title">Mii</h5>
+                        <p class="card-text">Nickname: {{nnid.nickname}}</p>
+                        <p class="card-text">Mii Hash: {{nnid.mii_hash}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card {% if not request.is_mobile %}w-25{% endif %} ms-2">
+            <div class="card-body">
+                <h5 class="card-title">NNID Information</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Archived on: {{nnid.archived_on}}</h6>
+                <p class="card-text">PID: {{nnid.pid}}</p>
+                <p class="card-text">Rank: {{nnid.rank}}</p>
+            </div>
+        </div>
+        <div class="card ms-2" {% if not request.is_mobile %}style="width: 35% !important;"{% endif %}>
+            <div class="card-body">
+                <h5 class="card-title">Other Information</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">NNID refreshed on: {{nnid.refreshed_on}}</h6>
+                <p class="card-text">Archiver: {{owner}}, Refresher: {{nnid.refresher}}</p>
+                {% if request.user.is_authenticated %}
+                <a href="/refresh/{{nnid.nnid}}" type="button" class="btn btn-primary"><span class="bi bi-arrow-clockwise"></span> Refresh NNID</a>
+                <a href="/complaint/{{nnid.nnid}}" type="button" class="btn btn-danger"><span class="bi bi-exclamation-diamond-fill"></span> Send a complaint</a><br>
+                {% if not is_fav %}
+                <a href="/favorite/{{nnid.nnid}}" type="button" class="mt-1 btn btn-warning"><span class="bi bi-plus-circle-fill"></span> Add to favorites</a>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
