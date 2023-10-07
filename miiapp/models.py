@@ -36,7 +36,6 @@ class NintendoNetworkID(models.Model):
     mii_data = models.TextField(null=False)
     nickname = models.CharField(max_length=11, null=False)
     pid = models.IntegerField(null=False, unique=True)
-    rank = models.IntegerField(null=False)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="owner")
     refresher = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="refresher")
     archived_on = models.DateTimeField(null=False, blank=True, default=now())
