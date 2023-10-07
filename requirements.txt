@@ -1,0 +1,3 @@
+django
+django-user-agents
+user-agents
