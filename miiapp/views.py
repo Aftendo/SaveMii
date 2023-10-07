@@ -16,9 +16,6 @@ if os.path.isdir(str(BASE_DIR)+"/archives/"):
 else:
     print("It doesn't. Creating directory.")
     os.mkdir(str(BASE_DIR)+"/archives/")
-"""
-todo when refresh nnid: check if nnid has already been archived and if a refresh has been asked
-"""
 # This is the actual NNID archiver code. The website is a wrapper for that only function.
 def nnidArchiver(nnid: str, user, refresh):
     if not refresh:
