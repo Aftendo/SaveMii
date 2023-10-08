@@ -9,6 +9,7 @@ import os
 import shutil
 from savemii.settings import BASE_DIR
 from django.utils.timezone import now
+import xmltodict
 
 print("Hi there! Checking if /archives/ exists....")
 if os.path.isdir(str(BASE_DIR)+"/archives/"):
@@ -37,11 +38,29 @@ def nnidArchiver(nnid: str, user, refresh):
         return "This NNID cannot be archived because it has been blocked."
     except ObjectDoesNotExist:
         pass
-    # Let's start by asking NNIDLT
-    api = get("https://nnidlt.murilo.eu.org/api.php?env=production&user_id="+str(nnid))
-    api = api.content.decode("utf-8")
-    # turn content into dict
-    api = loads(api)
+
+    # use the nintendo network api
+        
+    #default headers, according to https://github.com/kinnay/NintendoClients/wiki/Account-Server
+    headers = {
+        "X-Nintendo-Client-ID": "a2efa818a34fa16b8afbc8a74eba3eda",
+        "X-Nintendo-Client-Secret": "c91cdb5658bd4954ade78533a339cf9a"
+    }
+
+    #get principal id (pid)
+    url = "https://accountws.nintendo.net/v1/api/admin/mapped_ids"
+    payload = {'input_type': 'user_id', 'output_type': 'pid', 'input': nnid}
+    response = get(url, params=payload, headers=headers)
+    pid = xmltodict.parse(response.text)['mapped_ids']['mapped_id']['out_id']
+
+    #get mii data with pid
+    url = "https://accountws.nintendo.net/v1/api/miis"
+    payload = {'pids': pid}
+    response = get(url, params=payload, headers=headers)
+    api = xmltodict.parse(response.text)['miis']['mii']
+
+    api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
+
     # if message (error) key exists, return it
     if "message" in api:
         return api['message']
@@ -65,7 +84,7 @@ def nnidArchiver(nnid: str, user, refresh):
     if not user.is_authenticated:
         user = None
     if not refresh:
-        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=api['rank'], owner=user)     
+        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=(1800000000 - int(api['pid'])), owner=user)
     else:
         conflict.mii_data = api['data']
         conflict.nickname = api['name']
