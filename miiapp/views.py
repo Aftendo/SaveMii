@@ -9,8 +9,6 @@ import os
 import shutil
 from savemii.settings import BASE_DIR
 from django.utils.timezone import now
-from base64 import b64decode
-from binascii import hexlify
 import xmltodict
 
 print("Hi there! Checking if /archives/ exists....")
@@ -67,7 +65,6 @@ def nnidArchiver(nnid: str, user, refresh):
     if "message" in api:
         return api['message']
     #else, continue with the archiving process
-    api['data'] = hexlify(b64decode(api['data'])).decode()
     #WARNING: POORLY WRITTEN CODE AHEAD!!
     # save mii images
     miis = api['images']['image']
@@ -87,7 +84,7 @@ def nnidArchiver(nnid: str, user, refresh):
     if not user.is_authenticated:
         user = None
     if not refresh:
-        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], owner=user)     
+        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=(1800000000 - int(api['pid'])), owner=user)
     else:
         conflict.mii_data = api['data']
         conflict.nickname = api['name']
@@ -327,7 +324,7 @@ def getNNIDInfo(request):
         refresher = None
     else:
         refresher = nnid.refresher.username
-    return JsonResponse({"error": False, "nnid": {"nnid": nnid.nnid, "mii": {"nickname": nnid.nickname, "hash": nnid.mii_hash, "data": nnid.mii_data}, "pid": nnid.pid, "savemii": {"owner": owner, "refresher": refresher, "archived_on": nnid.archived_on, "refreshed_on": nnid.refreshed_on}}})
+    return JsonResponse({"error": False, "nnid": {"nnid": nnid.nnid, "mii": {"nickname": nnid.nickname, "hash": nnid.mii_hash, "data": nnid.mii_data}, "pid": nnid.pid, "rank": nnid.rank, "savemii": {"owner": owner, "refresher": refresher, "archived_on": nnid.archived_on, "refreshed_on": nnid.refreshed_on}}})
 
 def getHash(request):
     if not request.GET.get("nnid"):
