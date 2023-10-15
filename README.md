@@ -1,15 +1,13 @@
 # SaveMii
 NNID Archiver Service (source code)
 ## How do I setup this?
-This is a standard Django app,
-But if you really need steps, here you go :
-### Step one
-- Clone the repository : `git clone https://github.com/LetsShop3DS/SaveMii.git`
-- Do `cd SaveMii`
-- Create the database ! `python3 manage.py makemigrations miiapp`
-- Migrate it : `python3 manage.py migrate`
-- Now for the CSS/JS : `python3 manage.py collectstatic` and type "yes"
-- Now run the server with `python3 manage.py runserver IP-HERE:8000` for developpement and `python3 manage.py runserver IP-HERE:80` for production.
+This is a standard Django app. You probably should know how to setup one. But if you really need steps, here you go (for development setup only):
+- First, clone the repository: `git clone https://github.com/LetsShop3DS/SaveMii.git`
+- After that, run `cd SaveMii`
+- Now, let's create the database: `python3 manage.py makemigrations miiapp`
+- After that, we'll apply the migrations to the database: `python3 manage.py migrate`
+- Now, run the server with `python3 manage.py runserver`.
+**If everything went well, congrats, you now have a development setup! If it doesn't work, create an issue.**
 ### DISCLAIMER
 This is a Linux tutorial, but if you are on Windows, do it via WSL : https://aka.ms/wsl/
 ## Screenshot
