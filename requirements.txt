@@ -2,3 +2,4 @@ django
 django-user-agents
 user-agents
 xmltodict
+pillow
