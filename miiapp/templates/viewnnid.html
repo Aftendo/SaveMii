@@ -13,7 +13,7 @@
                         <h5 class="card-title">Mii</h5>
                         <p class="card-text">Nickname: {{nnid.nickname}}</p>
                         <p class="card-text">Mii Hash: {{nnid.mii_hash}}</p>
-                        <p class="card-text">Mii Data: <a href="#" onclick="navigator.clipboard.writeText('{{nnid.mii_data}}'); alert('Copied!');">Copy</a></p>
+                        <p class="card-text"> b64 Mii Data: <a href="#" onclick="navigator.clipboard.writeText('{{nnid.mii_data}}'); alert('Copied!');">Copy</a></p>
                     </div>
                 </div>
             </div>
@@ -30,14 +30,15 @@
             <div class="card-body">
                 <h5 class="card-title">Other Information</h5>
                 <h6 class="card-subtitle mb-2 text-body-secondary">NNID refreshed on: {{nnid.refreshed_on}}</h6>
-                <p class="card-text">Archiver: {{owner}}, Refresher: {{nnid.refresher}}</p>
+                <p class="card-text">Archiver: {% if nnid.is_auto_archived %}<b style='color: green;'>{% endif %}{{owner}}{% if nnid.is_auto_archived %}</b>{% endif %}, Refresher: {{nnid.refresher}}</p>
                 {% if request.user.is_authenticated %}
                 <a href="/refresh/{{nnid.nnid}}" type="button" class="btn btn-primary"><span class="bi bi-arrow-clockwise"></span> Refresh NNID</a>
                 <a href="/complaint/{{nnid.nnid}}" type="button" class="btn btn-danger"><span class="bi bi-exclamation-diamond-fill"></span> Send a complaint</a><br>
                 {% if not is_fav %}
-                <a href="/favorite/{{nnid.nnid}}" type="button" class="mt-1 btn btn-warning"><span class="bi bi-plus-circle-fill"></span> Add to favorites</a>
+                <a href="/favorite/{{nnid.nnid}}" type="button" class="mt-1 btn btn-warning"><span class="bi bi-star-fill"></span> Add to favorites</a>
                 {% endif %}
                 {% endif %}
+                <a href="/mii/{{nnid.mii_hash}}/data" type="button" class="mt-1 btn btn-success"><span class="bi bi-download"></span> Download .mii file</a>
             </div>
         </div>
     </div>

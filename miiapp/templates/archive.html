@@ -8,7 +8,8 @@
     {% if success %}
     <p style="color: green;">Thank you!! {{nnid}} has been archived!!</p>
     {% endif %}
-    <p>Put an NNID on the archive bar and hit the archive button to archive its data. (and preserve nintendo history)</p>
+    <p>If you wanna get your NNID archived quicker, you can archive it manually by typing it in the archive bar and hit the Archive button.</p>
+    <b>Or, you can wait for the auto archiver to archive your NNID!</b>
     <form method="post" action="/archive">
         {% csrf_token %}
         <div class="position-relative start-50 translate-middle input-group mt-5 w-75">

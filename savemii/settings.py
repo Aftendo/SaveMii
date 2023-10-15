@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import sys, os
+
+if 'runserver' in sys.argv:
+    os.environ.setdefault('SERVER_RUNNING', 'True')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,10 +34,15 @@ MAINTENANCE = False
 
 ALLOWED_HOSTS = ["insert allowed domain here"]
 
-VERSION = "1.0.0b"
+VERSION = "1.1.0b"
 
 CSRF_TRUSTED_ORIGINS = ["insert url here"]
 
+# Change these if they somehow get denied by Nintendo
+
+NINTENDO_API_ID = "a2efa818a34fa16b8afbc8a74eba3eda"
+
+NINTENDO_API_SECRET = "c91cdb5658bd4954ade78533a339cf9a"
 
 # Application definition
 

@@ -12,5 +12,6 @@ import os
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'miiarchiver.settings')
+os.environ.setdefault('SERVER_RUNNING', 'True')
 
 application = get_asgi_application()

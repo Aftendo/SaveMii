@@ -5,11 +5,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, Http404, HttpResponseRedirect, HttpResponse
 from requests import get
 from json import loads
-import os
-import shutil
-from savemii.settings import BASE_DIR
+from savemii.settings import BASE_DIR, NINTENDO_API_SECRET, NINTENDO_API_ID
 from django.utils.timezone import now
-import xmltodict
+from base64 import b64decode
+import threading, xmltodict, shutil, os 
 
 print("Hi there! Checking if /archives/ exists....")
 if os.path.isdir(str(BASE_DIR)+"/archives/"):
@@ -17,6 +16,20 @@ if os.path.isdir(str(BASE_DIR)+"/archives/"):
 else:
     print("It doesn't. Creating directory.")
     os.mkdir(str(BASE_DIR)+"/archives/")
+
+
+def auto_scrapper_thread():
+    os.system("python3 auto_archiver.py")
+
+if os.environ.get("SERVER_RUNNING") == "True":
+    if  not os.path.exists("/tmp/nnid_scrapper_running"):
+        scrapper_thread = threading.Thread(target=auto_scrapper_thread, daemon=True)
+        scrapper_thread.start()
+    else:
+        print("[AutoArchiver] Seems like I'm already running. If I'm not, delete /tmp/nnid_scrapper_running")
+else:
+    print("[AutoArchiver] Server not running; not starting.")
+
 # This is the actual NNID archiver code. The website is a wrapper for that only function.
 def nnidArchiver(nnid: str, user, refresh):
     if not refresh:
@@ -25,11 +38,11 @@ def nnidArchiver(nnid: str, user, refresh):
         print("Refreshing "+nnid+"!")
     # had the nnid been archived already?
     try:
-        conflict = NintendoNetworkID.objects.get(nnid=nnid)
+        nnid_db = NintendoNetworkID.objects.get(nnid=nnid)
         if not refresh:
             return "This NNID has already been archived. If the NNID has been changed since its archival, please use the 'Refresh NNID' button."
         else:
-            if (now()-conflict.refreshed_on).days < 1:
+            if (now()-nnid_db.refreshed_on).days < 1:
                 return "This NNID has been refreshed today. Please try again tomorrow."
     except ObjectDoesNotExist:
         pass
@@ -43,8 +56,8 @@ def nnidArchiver(nnid: str, user, refresh):
         
     #default headers, according to https://github.com/kinnay/NintendoClients/wiki/Account-Server
     headers = {
-        "X-Nintendo-Client-ID": "a2efa818a34fa16b8afbc8a74eba3eda",
-        "X-Nintendo-Client-Secret": "c91cdb5658bd4954ade78533a339cf9a"
+        "X-Nintendo-Client-ID": NINTENDO_API_ID,
+        "X-Nintendo-Client-Secret": NINTENDO_API_SECRET
     }
 
     #get principal id (pid)
@@ -59,7 +72,10 @@ def nnidArchiver(nnid: str, user, refresh):
     response = get(url, params=payload, headers=headers)
     api = xmltodict.parse(response.text)['miis']['mii']
 
-    api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
+    try:
+        api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
+    except KeyError:
+        api['images']['hash'] = api["images"]["image"]["url"].split("/")[-1].split("_")[0]
 
     # if message (error) key exists, return it
     if "message" in api:
@@ -70,33 +86,48 @@ def nnidArchiver(nnid: str, user, refresh):
     miis = api['images']['image']
     if not os.path.isdir(str(BASE_DIR)+"/archives/"+nnid):
         os.mkdir(str(BASE_DIR)+"/archives/"+nnid)
-    for url in miis:
-        #loop through every Mii URL in the json, then save
-        image = get(url["url"], verify=False)
+    if len(api['images']['image']) > 4:
+        for url in miis:
+            #loop through every Mii URL in the json, then save
+            image = get(url["url"], verify=False)
+            #dirty fix for checking for the TGA format mii image
+            if url['type'] == "standard":
+                extension = ".tga"
+            else:
+                extension = ".png"
+                file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
+                file.write(image.content)
+                file.close()
+    else:
+        image = get(miis["url"], verify=False)
         #dirty fix for checking for the TGA format mii image
-        if url['type'] == "standard":
+        if miis['type'] == "standard":
             extension = ".tga"
         else:
             extension = ".png"
-        file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
+        file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+miis['type']+extension, "wb")
         file.write(image.content)
         file.close()
     if not user.is_authenticated:
         user = None
     if not refresh:
-        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=(1800000000 - int(api['pid'])), owner=user)
+        NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=(1800000000 - int(api['pid'])), owner=user, archived_on=now(), refreshed_on=now(), is_auto_archived=False)
     else:
-        conflict.mii_data = api['data']
-        conflict.nickname = api['name']
-        conflict.refreshed_on = now()
-        conflict.refresher = user
-        conflict.save()
+        nnid_db.mii_data = api['data']
+        nnid_db.nickname = api['name']
+        nnid_db.refreshed_on = now()
+        nnid_db.refresher = user
+        nnid_db.save()
     print("Archived/Refreshed "+nnid+"!")   
 
 
 def index(request):
     count_of_nnid = NintendoNetworkID.objects.all().count()
-    return render(request, 'index.html', {"title": "Home", "count": count_of_nnid})
+    if not os.path.exists("/tmp/nnid_scrapper_running"):
+        alive = False
+    else: 
+        alive = True
+    return render(request, 'index.html', {"title": "Home", "count": count_of_nnid, "is_auto_running": alive})
 
 def archive(request):
     if request.method == 'POST':
@@ -147,7 +178,7 @@ def signup(request):
         else:
             if request.POST.get("password") != request.POST.get("cpassword"):
                 return render(request, "signup.html", {"title": "Sign Up", "message": "Passwords don't match."})
-            if request.POST.get('username') == "Anonymous":
+            if request.POST.get('username') == "Anonymous" or request.POST.get('username') == "Auto Archiver":
                 return render(request, "signup.html", {"title": "Sign Up", "message": "You cannot use that name."})
             try:
                 conflict = User.objects.get(username=request.POST.get("username"))
@@ -191,7 +222,9 @@ def viewNNID(request, nnid):
             is_fav = False
     else:
         is_fav = False
-    if nnid_db.owner == None:
+    if nnid_db.owner == None  and nnid_db.is_auto_archived:
+        owner = "Auto Archiver"
+    elif nnid_db.owner == None:
         owner = "Anonymous"
     else:
         owner = nnid_db.owner
@@ -309,6 +342,16 @@ def miiImage(request, hash, type):
     image = open(path, "rb")
     return HttpResponse(image.read(), content_type=content_type)
 
+def miiData(request, hash):
+    try:
+        nnid = NintendoNetworkID.objects.get(mii_hash=hash)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": True, "message": "NNID corresponding to Hash not found"}, status=404)
+    mii = b64decode(nnid.mii_data)
+    response = HttpResponse(mii)
+    response['Content-Disposition'] = 'attachement; filename="'+nnid.nnid+'.mii"'
+    return response
+
 def getNNIDInfo(request):
     if not request.GET.get("nnid"):
         return JsonResponse({"error": False, "message": "Missing parameters"})
@@ -316,7 +359,9 @@ def getNNIDInfo(request):
         nnid = NintendoNetworkID.objects.get(nnid=request.GET.get("nnid"))
     except ObjectDoesNotExist:
         return JsonResponse({"error": True, "message": "NNID not found/not archived"}, status=404)
-    if nnid.owner == None:
+    if nnid.owner == None and nnid.is_auto_archived:
+        owner = "Auto Archiver"
+    elif nnid.owner == None:
         owner = None
     else:
         owner = nnid.owner.username
@@ -324,7 +369,7 @@ def getNNIDInfo(request):
         refresher = None
     else:
         refresher = nnid.refresher.username
-    return JsonResponse({"error": False, "nnid": {"nnid": nnid.nnid, "mii": {"nickname": nnid.nickname, "hash": nnid.mii_hash, "data": nnid.mii_data}, "pid": nnid.pid, "rank": nnid.rank, "savemii": {"owner": owner, "refresher": refresher, "archived_on": nnid.archived_on, "refreshed_on": nnid.refreshed_on}}})
+    return JsonResponse({"error": False, "nnid": {"nnid": nnid.nnid, "mii": {"nickname": nnid.nickname, "hash": nnid.mii_hash, "data": nnid.mii_data}, "pid": nnid.pid, "rank": nnid.rank, "savemii": {"owner": owner, "refresher": refresher, "archived_on": nnid.archived_on, "refreshed_on": nnid.refreshed_on, "is_auto_archived": nnid.is_auto_archived}}})
 
 def getHash(request):
     if not request.GET.get("nnid"):
@@ -334,6 +379,9 @@ def getHash(request):
     except ObjectDoesNotExist:
         return JsonResponse({"error": True, "message": "NNID not found/not archived"}, status=404)
     return HttpResponse(nnid.mii_hash)
+
+def archived(request):
+    return HttpResponse(NintendoNetworkID.objects.all().count())
 
 def err404(request, exception):
     return render(request, "404.html", {"title": "404"})

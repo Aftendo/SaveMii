@@ -3,8 +3,8 @@
 <header class="bg-body-tertiary text-center py-5">
     <div class="container-fluid">
         <h1>SaveMii</h1>
-        <p class="lead">A simple service to preserve Nintendo history by backing up as much NNIDs as we can.</p>
-        <i>Currently hosting {{count}} NNIDs!</i>
+        <p class="lead">A simple service to preserve Nintendo history by backing up as much NNIDs as possible, using an automatic archiver.</p>
+        <i id="archived-nnids"></i>
     </div>
 </header>
 <div class="text-center mt-2">
@@ -12,6 +12,13 @@
     <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center" role="alert">
         <span class="bi bi-exclamation-triangle-fill"></span>
         <div>SaveMii on mobile devices may not be the greatest experience. Please use a PC for a more comfortable experience.</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% if not is_auto_running %}
+    <div class="alert alert-danger alert-dismissible fade show position-relative start-50 translate-middle input-group mt-5 w-75" role="alert">
+        <span class="bi bi-exclamation-triangle-fill"></span>
+        <div><b>Seems like the automatic NNID archiver broke. Please report this to the website administrator.</b></div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}

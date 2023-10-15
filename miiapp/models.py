@@ -27,6 +27,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+import datetime
 
 # nnid table
 class NintendoNetworkID(models.Model):
@@ -39,8 +40,9 @@ class NintendoNetworkID(models.Model):
     rank = models.IntegerField(null=False, unique=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="owner")
     refresher = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="refresher")
-    archived_on = models.DateTimeField(null=False, blank=True, default=now())
-    refreshed_on = models.DateTimeField(null=False, blank=True, default=now())
+    archived_on = models.DateTimeField(null=False, blank=True, default=datetime.datetime(2023, 10, 9, 16, 9, 16, 814920))
+    refreshed_on = models.DateTimeField(null=False, blank=True, default=datetime.datetime(2023, 10, 9, 16, 9, 16, 814920))
+    is_auto_archived = models.BooleanField(null=False, blank=False, default=True)
     class Meta:
         verbose_name = "Nintendo Network ID"
         verbose_name_plural = "Nintendo Network ID"
