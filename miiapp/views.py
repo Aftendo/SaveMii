@@ -8,7 +8,8 @@ from json import loads
 from savemii.settings import BASE_DIR, NINTENDO_API_SECRET, NINTENDO_API_ID
 from django.utils.timezone import now
 from base64 import b64decode
-import threading, xmltodict, shutil, os 
+from PIL import Image
+import threading, xmltodict, shutil, os, io
 
 print("Hi there! Checking if /archives/ exists....")
 if os.path.isdir(str(BASE_DIR)+"/archives/"):
@@ -95,8 +96,12 @@ def nnidArchiver(nnid: str, user, refresh):
                 extension = ".tga"
             else:
                 extension = ".png"
+                image = Image.open(io.BytesIO(image.content))
+                img = io.BytesIO()
+                image.save(img, format="WEBP", quality=40)
+                img = img.getvalue()
                 file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
-                file.write(image.content)
+                file.write(img)
                 file.close()
     else:
         image = get(miis["url"], verify=False)
@@ -105,8 +110,12 @@ def nnidArchiver(nnid: str, user, refresh):
             extension = ".tga"
         else:
             extension = ".png"
+        image = Image.open(io.BytesIO(image.content))
+        img = io.BytesIO()
+        image.save(img, format="WEBP", quality=40)
+        img = img.getvalue()
         file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+miis['type']+extension, "wb")
-        file.write(image.content)
+        file.write(img)
         file.close()
     if not user.is_authenticated:
         user = None
