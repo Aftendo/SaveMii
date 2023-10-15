@@ -10,6 +10,8 @@ from django.utils.timezone import now
 from savemii.settings import BASE_DIR, NINTENDO_API_ID, NINTENDO_API_SECRET
 from requests import get
 import warnings
+import io
+from PIL import Image
 
 #we're running bois
 daemon = open("/tmp/nnid_scrapper_running", "w+")
@@ -99,8 +101,13 @@ with warnings.catch_warnings():
                                 extension = ".tga"
                             else:
                                 extension = ".png"
+                            #compress image
+                            image = Image.open(io.BytesIO(image.content))
+                            img = io.BytesIO()
+                            image.save(img, format="WEBP", quality=40)
+                            img = img.getvalue()
                             file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
-                            file.write(image.content)
+                            file.write(img)
                             file.close()
                     else:
                         #loop through every Mii URL in the json, then save
@@ -110,8 +117,12 @@ with warnings.catch_warnings():
                             extension = ".tga"
                         else:
                             extension = ".png"
+                        image = Image.open(io.BytesIO(image.content))
+                        img = io.BytesIO()
+                        image.save(img, format="WEBP", quality=40)
+                        img = img.getvalue()
                         file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+miis['type']+extension, "wb")
-                        file.write(image.content)
+                        file.write(img)
                         file.close()
 
                     NintendoNetworkID.objects.create(nnid=nnid, mii_hash=api['images']['hash'], mii_data=api['data'], nickname=api['name'], pid=api['pid'], rank=(1800000000 - int(api['pid'])), owner=None, archived_on=now(), refreshed_on=now())
