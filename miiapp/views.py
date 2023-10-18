@@ -67,20 +67,22 @@ def nnidArchiver(nnid: str, user, refresh):
     response = get(url, params=payload, headers=headers)
     pid = xmltodict.parse(response.text)['mapped_ids']['mapped_id']['out_id']
 
+    if not pid:
+        return "The NNID could not be found."
+
     #get mii data with pid
     url = "https://accountws.nintendo.net/v1/api/miis"
     payload = {'pids': pid}
     response = get(url, params=payload, headers=headers)
-    api = xmltodict.parse(response.text)['miis']['mii']
+    if response.status_code == 404:
+        return "The NNID was deleted."
+     api = xmltodict.parse(response.text)['miis']['mii']
 
     try:
         api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
     except KeyError:
         api['images']['hash'] = api["images"]["image"]["url"].split("/")[-1].split("_")[0]
-
-    # if message (error) key exists, return it
-    if "message" in api:
-        return api['message']
+        
     #else, continue with the archiving process
     #WARNING: POORLY WRITTEN CODE AHEAD!!
     # save mii images
