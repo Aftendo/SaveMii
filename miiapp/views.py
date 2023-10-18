@@ -365,9 +365,9 @@ def miiData(request, hash):
 
 def getNNIDInfo(request):
     if not request.GET.get("nnid") or not request.GET.get("pid"):
-        return JsonResponse({"error": False, "message": "Missing parameters"})
+        return JsonResponse({"error": True, "message": "Missing parameters"})
     if request.GET.get("nnid") and request.GET.get("pid"):
-        return JsonResponse({"error": False, "message": "Incorrect request"})
+        return JsonResponse({"error": True, "message": "Incorrect request"})
     try:
         try:
             if request.GET.get("nnid"):
@@ -392,7 +392,7 @@ def getNNIDInfo(request):
 
 def getHash(request):
     if not request.GET.get("nnid"):
-        return JsonResponse({"error": False, "message": "Missing parameters"})
+        return JsonResponse({"error": True, "message": "Missing parameters"})
     try:
         nnid = NintendoNetworkID.objects.get(nnid=request.GET.get("nnid"))
     except ObjectDoesNotExist:
