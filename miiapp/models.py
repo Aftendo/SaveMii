@@ -31,7 +31,7 @@ import datetime
 
 # nnid table
 class NintendoNetworkID(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True)
+    id = models.AutoField(primary_key=True, blank=True)
     nnid = models.CharField(verbose_name="Nintendo Network ID", max_length=16, null=False, unique=True)
     mii_hash = models.CharField(max_length=13, null=False, unique=True)
     mii_data = models.TextField(null=False)
@@ -51,7 +51,7 @@ class NintendoNetworkID(models.Model):
     
 # block list
 class BlockedNNID(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True)
+    id = models.AutoField(primary_key=True, blank=True)
     nnid = models.CharField(verbose_name="Nintendo Network ID", max_length=16, null=False, unique=True)
     class Meta:
         verbose_name = "Blocked NNID"
@@ -61,7 +61,7 @@ class BlockedNNID(models.Model):
 
 # favorite table, when the user favorites a nnid
 class Favorite(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True)
+    id = models.AutoField(primary_key=True, blank=True)
     target = models.ForeignKey(NintendoNetworkID, on_delete=models.CASCADE, null=False)
     source = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     def __str__(self):
@@ -69,7 +69,7 @@ class Favorite(models.Model):
 
 # complaints table, in case someone wants a nnid removed from the db
 class Complaint(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True)
+    id = models.AutoField(primary_key=True, blank=True)
     target = models.ForeignKey(NintendoNetworkID, on_delete=models.CASCADE, null=False)
     content = models.TextField(null=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
@@ -78,7 +78,7 @@ class Complaint(models.Model):
     
 # ban table
 class Ban(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True)
+    id = models.AutoField(primary_key=True, blank=True)
     source = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name="banner")
     target = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name="banned")
     reason = models.TextField(null=False)
