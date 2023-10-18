@@ -52,33 +52,22 @@ with warnings.catch_warnings():
                         "X-Nintendo-Client-Secret": NINTENDO_API_SECRET
                     }
 
-                    #get nnid
-                    url = "https://accountws.nintendo.net/v1/api/admin/mapped_ids"
-                    payload = {'input_type': 'pid', 'output_type': 'user_id', 'input': i}
+                    #get mii data with pid
+                    url = "https://accountws.nintendo.net/v1/api/miis"
+                    payload = {'pids': i}
                     response = get(url, params=payload, headers=headers)
-                    nnid = xmltodict.parse(response.text)['mapped_ids']['mapped_id']['out_id']
-
-                    if not nnid:
-                        print("[AutoArchiver] NNID not found; skipping PID "+str(i))
+                    if response.status_code == 404:
+                        print("[AutoArchiver] NNID not found/deleted; skipping PID "+str(i))
                         i -= 1
                         continue
-
+                    api = xmltodict.parse(response.text)['miis']['mii']
+                    nnid = api['user_id']
                     try:
                         is_blocked = BlockedNNID.objects.get(nnid=nnid)
                         i -= 1
                         continue
                     except ObjectDoesNotExist:
                         pass
-
-                    #get mii data with pid
-                    url = "https://accountws.nintendo.net/v1/api/miis"
-                    payload = {'pids': i}
-                    response = get(url, params=payload, headers=headers)
-                    if response.status_code == 404:
-                        print("[AutoArchiver] NNID deleted; skipping PID "+str(i))
-                        i -= 1
-                        continue
-                    api = xmltodict.parse(response.text)['miis']['mii']
                     try:
                         api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
                     except KeyError:
