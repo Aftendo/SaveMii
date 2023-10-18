@@ -76,7 +76,7 @@ def nnidArchiver(nnid: str, user, refresh):
     response = get(url, params=payload, headers=headers)
     if response.status_code == 404:
         return "The NNID was deleted."
-     api = xmltodict.parse(response.text)['miis']['mii']
+    api = xmltodict.parse(response.text)['miis']['mii']
 
     try:
         api['images']['hash'] = api["images"]["image"][0]["url"].split("/")[-1].split("_")[0]
