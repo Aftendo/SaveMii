@@ -11,6 +11,8 @@ This is a standard Django app. You probably should know how to setup one. But if
 - Now, run the server with `python3 manage.py runserver`.
 **If everything went well, congrats, you now have a development setup! If it doesn't work, create an issue.**
 ### DISCLAIMER
-This is a Linux tutorial, but if you are on Windows, do it via WSL : https://aka.ms/wsl/
+This is a Linux tutorial, but if you are on Windows, just install Git and Python. it should just work.
+
+**note: no support for windows is guaranteed, it is a linux software originally**
 ## Screenshot
 ![](https://raw.githubusercontent.com/LetsShop3DS/SaveMii/main/screen.png)
