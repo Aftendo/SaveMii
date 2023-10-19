@@ -85,6 +85,8 @@ with warnings.catch_warnings():
                         for url in miis:
                             #loop through every Mii URL in the json, then save
                             image = get(url["url"], verify=False)
+                            if image.status_code = 403:
+                                continue
                             #dirty fix for checking for the TGA format mii image
                             if url['type'] == "standard":
                                 extension = ".tga"
