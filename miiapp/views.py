@@ -93,18 +93,20 @@ def nnidArchiver(nnid: str, user, refresh):
         for url in miis:
             #loop through every Mii URL in the json, then save
             image = get(url["url"], verify=False)
+            if image.status_code = 403:
+                continue
             #dirty fix for checking for the TGA format mii image
             if url['type'] == "standard":
                 extension = ".tga"
             else:
                 extension = ".png"
-                image = Image.open(io.BytesIO(image.content))
-                img = io.BytesIO()
-                image.save(img, format="WEBP", quality=40)
-                img = img.getvalue()
-                file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
-                file.write(img)
-                file.close()
+            image = Image.open(io.BytesIO(image.content))
+            img = io.BytesIO()
+            image.save(img, format="WEBP", quality=40)
+            img = img.getvalue()
+            file = open(str(BASE_DIR)+"/archives/"+nnid+"/"+url['type']+extension, "wb")
+            file.write(img)
+            file.close()
     else:
         image = get(miis["url"], verify=False)
         #dirty fix for checking for the TGA format mii image
