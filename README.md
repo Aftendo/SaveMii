@@ -6,6 +6,7 @@ This website contains an auto-archiver which will get every single existing NNID
 This is a standard Django app. You probably should know how to setup one. But if you really need steps, here you go (for development setup only):
 - First, clone the repository: `git clone https://github.com/LetsShop3DS/SaveMii.git`
 - After that, run `cd SaveMii`
+- Install dependencies with `pip3 install -r requirements.txt`
 - Now, let's create the database: `python3 manage.py makemigrations miiapp`
 - After that, we'll apply the migrations to the database: `python3 manage.py migrate`
 - Now, run the server with `python3 manage.py runserver`.
